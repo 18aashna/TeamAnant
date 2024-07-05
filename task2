@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <string.h>
+
+
+#define FILENAME "apue.txt"
+#define BUFFER_SIZE 100
+int fd;
+
+void parentProcess() {
+    if ((fd=open(FILENAME,O_WRONLY | O_APPEND | O_CREAT))<0){
+       printf("open error");}
+ 
+    char parentMessage[BUFFER_SIZE];
+    printf("parent message?");
+    scanf("%s",parentMessage);
+    if ((write(fd, parentMessage, strlen(parentMessage))) != (ssize_t)strlen(parentMessage)){
+       printf("write error");}
+    write(fd, "\n", 1);
+    printf("Parent wrote: %s", parentMessage);
+    close(fd);
+}
+
+void childProcess() {
+    sleep(3); // Ensure parent writes first
+
+    if ((fd=open(FILENAME,O_WRONLY | O_APPEND | O_CREAT))<0){
+       printf("open error");}
+
+    lseek(fd, 0, SEEK_END);
+    char childMessage[BUFFER_SIZE];
+    printf("child message?");
+    scanf("%s",childMessage);
+    if ((write(fd, childMessage, strlen(childMessage))) != (ssize_t)strlen(childMessage)){
+       printf("write error");}
+    write(fd, "\n", 1);
+    printf("Child wrote: %s", childMessage);
+    close(fd);
+
+}
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        printf ("fork error");
+    } else if (pid == 0) {
+        childProcess();
+    } else {
+        parentProcess();
+        wait(NULL); 
+    }
+
+    return 0;
+}
