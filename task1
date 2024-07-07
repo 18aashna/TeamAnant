@@ -24,7 +24,7 @@ void child(){
 	sleep(3);
 	char buff[MAX];
 	int n;
-	if ((fd=open("apue.txt",O_RDONLY | O_CREAT | O_TRUNC)) < 0){
+	if ((fd=open("apue.txt",O_RDONLY)) < 0){
 		printf("open error");}
 	if ((n=read(fd,buff,strlen(buff))) != strlen(buff)){
 		printf("read error");}
